@@ -1,58 +1,48 @@
 #include "sort.h"
 
-void swap(listint_t **head, listint_t *node1, listint_t *node2);
 /**
- * insertion_sort_list - sorts a doubly linked list with
- * the insertion sort algorithm
- *
- * @list: list to be sorted
- *
- * Return: void
+ * get_head - Get the head of a doubly linked list
+ * @tmp: node in linked list
+ * Return: head of linked list
  */
-void insertion_sort_list(listint_t **list)
+listint_t *get_head(listint_t *tmp)
 {
-	listint_t *forw, *tmp;
+	while (tmp->prev)
+		tmp = tmp->prev;
 
-	if (list == NULL || *list == NULL || (*list)->next == NULL)
-		return;
-
-	for (forw = (*list)->next; forw && forw->prev; forw = forw->next)
-	{
-		for (; forw && forw->prev && forw->n < forw->prev->n;
-		     forw = forw->prev)
-		{
-			tmp = forw->prev;
-			swap(list, tmp, forw);
-			print_list(*list);
-			forw = forw->next;
-		}
-	}
+	return (tmp);
 }
 
 /**
- * swap - swaps two nodes
- * @head: the head node
- * @node1: The first node
- * @node2: the second node
- *
- * Return: void
+ * insertion_sort_list - Sort a doubly linked list of integers
+ * in ascending order using insertion sort algorithm.
+ * @list: doubly linked list
  */
-void swap(listint_t **head, listint_t *node1, listint_t *node2)
+void insertion_sort_list(listint_t **list)
 {
-	listint_t *prev, *next;
+	listint_t *tmp, *hold, *ptmp;
 
-	prev = node1->prev;
-	next = node2->next;
+	if (list == NULL)
+		return;
+	tmp = get_head(*list);
 
-	if (prev != NULL)
-		prev->next = node2;
-	else
-		*head = node2;
-
-	node1->prev = node2;
-	node1->next = next;
-	node2->prev = prev;
-	node2->next = node1;
-	if (next)
-		next->prev = node1;
+	for (tmp = tmp->next; tmp;)
+	{
+		hold = tmp->next;
+		while (tmp->prev && tmp->n < tmp->prev->n)
+		{
+			ptmp = tmp->prev;
+			ptmp->next = tmp->next;
+			tmp->prev = ptmp->prev;
+			ptmp->prev = tmp;
+			tmp->next = ptmp;
+			if (ptmp->next)
+				ptmp->next->prev = ptmp;
+			if (tmp->prev)
+				tmp->prev->next = tmp;
+			print_list(get_head(*list));
+		}
+		tmp = hold;
+	}
+	*list = get_head(*list);
 }
